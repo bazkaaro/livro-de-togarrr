@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linha do Tempo | AWS · Azure · Google Cloud</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Linha do Tempo das Clouds</h1>
+            <p>Clique em qualquer ano ou card para ver as diferenças entre AWS, Azure e Google Cloud</p>
+        </div>
+
+        <div class="timeline" id="timeline">
+            <div class="timeline-item" data-cloud="aws">
+                <div class="timeline-icon"><i class="fab fa-aws"></i></div>
+                <div class="timeline-year">2006</div>
+                <div class="timeline-name">Amazon Web Services</div>
+            </div>
+            <div class="timeline-item" data-cloud="azure">
+                <div class="timeline-icon"><i class="fab fa-microsoft"></i></div>
+                <div class="timeline-year">2010</div>
+                <div class="timeline-name">Microsoft Azure</div>
+            </div>
+            <div class="timeline-item" data-cloud="gcp">
+                <div class="timeline-icon"><i class="fab fa-google"></i></div>
+                <div class="timeline-year">2011</div>
+                <div class="timeline-name">Google Cloud Platform</div>
+            </div>
+        </div>
+
+        <div class="cards-container" id="cardsContainer">
+            <div class="cloud-card aws" data-cloud="aws">
+                <div class="card-header">
+                    <i class="fab fa-aws"></i>
+                    <h2>AWS</h2>
+                </div>
+                <ul class="differences-list">
+                    <li><strong>Market share:</strong> 31% (lider mundial)</li>
+                    <li><strong>Mais de 200 servicos</strong> (a mais completa)</li>
+                    <li><strong>Melhor para:</strong> Empresas grandes, escala global</li>
+                    <li><strong>Precificacao:</strong> Modelo mais complexo</li>
+                </ul>
+            </div>
+            <div class="cloud-card azure" data-cloud="azure">
+                <div class="card-header">
+                    <i class="fab fa-microsoft"></i>
+                    <h2>Azure</h2>
+                </div>
+                <ul class="differences-list">
+                    <li><strong>Market share:</strong> 25% (segundo lugar)</li>
+                    <li><strong>Melhor integracao</strong> com ecossistema Microsoft</li>
+                    <li><strong>Melhor para:</strong> Empresas que usam .NET, Windows Server</li>
+                    <li><strong>Diferencial:</strong> Híbrido com Azure Stack</li>
+                </ul>
+            </div>
+            <div class="cloud-card gcp" data-cloud="gcp">
+                <div class="card-header">
+                    <i class="fab fa-google"></i>
+                    <h2>Google Cloud</h2>
+                </div>
+                <ul class="differences-list">
+                    <li><strong>Market share:</strong> 11% (terceiro lugar)</li>
+                    <li><strong>Especialista em:</strong> Big Data, IA/ML, Kubernetes</li>
+                    <li><strong>Melhor para:</strong> Startups, Ciencia de Dados</li>
+                    <li><strong>Diferencial:</strong> Rede de fibra otica propria</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="detail-panel" id="detailPanel">
+            <div class="detail-title" id="detailTitle">
+                <i class="fas fa-info-circle"></i>
+                <span>Clique em qualquer card para ver as diferencas detalhadas</span>
+            </div>
+            <div class="detail-grid" id="detailGrid"></div>
+        </div>
+
+        <div class="footer">
+            <p>Clique nos cards (AWS, Azure, Google Cloud) ou na linha do tempo acima - os detalhes mudam dinamicamente</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
