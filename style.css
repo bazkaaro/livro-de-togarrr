@@ -690,7 +690,8 @@ body {
   filter:brightness(1.05);
 }
 
-.mission-image-placeholder {
+.mission-image-placeholder,
+.img-placeholder {
   text-align:center;
   color:rgba(100,65,20,.5);
   font-style:italic;
