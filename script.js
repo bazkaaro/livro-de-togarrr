@@ -196,9 +196,17 @@ function renderMainMissionRight() {
     const safeImage = encodeURI(m.image.trim());
     el.innerHTML = `
       <div class="mission-image-container" data-image="${safeImage}" data-title="${m.title}" tabindex="0">
-        <img src="${safeImage}" alt="${m.title}" class="mission-image" draggable="false" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\"mission-image-placeholder\"><p>Imagem não disponível</p><small>Verifique o arquivo na pasta assets</small></div>';">
+        <img src="${safeImage}" alt="${m.title}" class="mission-image" draggable="false">
       </div>
     `;
+
+    const imageEl = el.querySelector('.mission-image');
+    if (imageEl) {
+      imageEl.addEventListener('error', function () {
+        this.style.display = 'none';
+        this.parentElement.innerHTML = '<div class="img-placeholder mission-image-placeholder"><p>Imagem não disponível</p><small>E aqui é pra por a foto: defina imgSrc no script.js</small></div>';
+      });
+    }
   } else {
     el.innerHTML = `
       <div class="mission-image-placeholder">
