@@ -30,7 +30,7 @@ const ACT_TITLE = "Ato II";
 const MAIN_MISSION = {
   title : "Investigue Esverta",
   desc  : `Os mendigos comentaram para o Giorgino que um grupo de homens encapuzados andaram pela cidade de Esverta, eles ouviram algo sobre ressucitação de mortos, a maioria dos mendigos de Esverta são subordinados de um homem chamado Esfola olhos que é devoto das divindades da morte Kindreds, então é de bom saber que esse tipo de habilidade é proibida e considerada profana para as leis naturais da magia natural.`,
-  image : "assets/esverta desenhada.png"   /* Cole aqui a URL da imagem. Ex: "https://exemplo.com/imagem.jpg" ou deixe vazio */
+  image : "/assets/images/esverta-desenhada.png"   /* Cole aqui a URL da imagem. Ex: "https://exemplo.com/imagem.jpg" ou deixe vazio */
 };
 
 /* ── MISSÕES SECUNDÁRIAS ────────────────────────────────── */
