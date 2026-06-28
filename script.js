@@ -193,9 +193,10 @@ function renderMainMissionRight() {
   const m = MAIN_MISSION;
   const el = document.getElementById('mainRightContent');
   if (m.image && m.image.trim()) {
+    const safeImage = encodeURI(m.image.trim());
     el.innerHTML = `
-      <div class="mission-image-container" data-image="${m.image}" data-title="${m.title}" tabindex="0">
-        <img src="${m.image}" alt="${m.title}" class="mission-image" draggable="false">
+      <div class="mission-image-container" data-image="${safeImage}" data-title="${m.title}" tabindex="0">
+        <img src="${safeImage}" alt="${m.title}" class="mission-image" draggable="false" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\"mission-image-placeholder\"><p>Imagem não disponível</p><small>Verifique o arquivo na pasta assets</small></div>';">
       </div>
     `;
   } else {
@@ -368,6 +369,9 @@ function openBookView() {
   document.getElementById('openBook').style.display    = 'block';
   document.getElementById('closeBtn').style.display    = 'inline-block';
   document.getElementById('actTitle').textContent      = ACT_TITLE;
+  document.body.style.overflow = 'auto';
+  document.documentElement.style.overflow = 'auto';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   playEffect('audioOpen');
   
   // Resetar estado e renderizar
@@ -383,6 +387,8 @@ function closeBook() {
   document.getElementById('bookWrapper').style.display = 'flex';
   document.getElementById('openBook').style.display    = 'none';
   document.getElementById('closeBtn').style.display    = 'none';
+  document.body.style.overflow = '';
+  document.documentElement.style.overflow = '';
 }
 
 function initImageViewerTriggers() {
