@@ -1,90 +1,145 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Linha do Tempo | AWS · Azure · Google Cloud</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>O Livro de Togar</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Linha do Tempo das Clouds</h1>
-            <p>Clique em qualquer ano ou card para ver as diferenças entre AWS, Azure e Google Cloud</p>
-        </div>
 
-        <div class="timeline" id="timeline">
-            <div class="timeline-item" data-cloud="aws">
-                <div class="timeline-icon"><i class="fab fa-aws"></i></div>
-                <div class="timeline-year">2006</div>
-                <div class="timeline-name">Amazon Web Services</div>
-            </div>
-            <div class="timeline-item" data-cloud="azure">
-                <div class="timeline-icon"><i class="fab fa-microsoft"></i></div>
-                <div class="timeline-year">2010</div>
-                <div class="timeline-name">Microsoft Azure</div>
-            </div>
-            <div class="timeline-item" data-cloud="gcp">
-                <div class="timeline-icon"><i class="fab fa-google"></i></div>
-                <div class="timeline-year">2011</div>
-                <div class="timeline-name">Google Cloud Platform</div>
-            </div>
-        </div>
+  <canvas id="bgCanvas"></canvas>
+  <div class="ambient-glow"></div>
+  <div id="owlSounds">~ hOOt ~ krrr ~ whooo ~</div>
 
-        <div class="cards-container" id="cardsContainer">
-            <div class="cloud-card aws" data-cloud="aws">
-                <div class="card-header">
-                    <i class="fab fa-aws"></i>
-                    <h2>AWS</h2>
-                </div>
-                <ul class="differences-list">
-                    <li><strong>Market share:</strong> 31% (lider mundial)</li>
-                    <li><strong>Mais de 200 servicos</strong> (a mais completa)</li>
-                    <li><strong>Melhor para:</strong> Empresas grandes, escala global</li>
-                    <li><strong>Precificacao:</strong> Modelo mais complexo</li>
-                </ul>
-            </div>
-            <div class="cloud-card azure" data-cloud="azure">
-                <div class="card-header">
-                    <i class="fab fa-microsoft"></i>
-                    <h2>Azure</h2>
-                </div>
-                <ul class="differences-list">
-                    <li><strong>Market share:</strong> 25% (segundo lugar)</li>
-                    <li><strong>Melhor integracao</strong> com ecossistema Microsoft</li>
-                    <li><strong>Melhor para:</strong> Empresas que usam .NET, Windows Server</li>
-                    <li><strong>Diferencial:</strong> Híbrido com Azure Stack</li>
-                </ul>
-            </div>
-            <div class="cloud-card gcp" data-cloud="gcp">
-                <div class="card-header">
-                    <i class="fab fa-google"></i>
-                    <h2>Google Cloud</h2>
-                </div>
-                <ul class="differences-list">
-                    <li><strong>Market share:</strong> 11% (terceiro lugar)</li>
-                    <li><strong>Especialista em:</strong> Big Data, IA/ML, Kubernetes</li>
-                    <li><strong>Melhor para:</strong> Startups, Ciencia de Dados</li>
-                    <li><strong>Diferencial:</strong> Rede de fibra otica propria</li>
-                </ul>
-            </div>
-        </div>
+  <audio id="audioOpen" preload="auto"><source src="book-open.mp3" type="audio/mpeg"></audio>
 
-        <div class="detail-panel" id="detailPanel">
-            <div class="detail-title" id="detailTitle">
-                <i class="fas fa-info-circle"></i>
-                <span>Clique em qualquer card para ver as diferencas detalhadas</span>
-            </div>
-            <div class="detail-grid" id="detailGrid"></div>
-        </div>
+  <div id="scene">
 
-        <div class="footer">
-            <p>Clique nos cards (AWS, Azure, Google Cloud) ou na linha do tempo acima - os detalhes mudam dinamicamente</p>
+    <!-- ========== LIVRO FECHADO ========== -->
+    <div id="bookWrapper" onclick="openBookView()">
+      <div id="closedBook">
+        <div class="spine">
+          <div class="spine-rib" style="top:55px"></div>
+          <div class="spine-rib" style="top:90px"></div>
+          <div class="spine-rib" style="bottom:55px"></div>
+          <div class="spine-rib" style="bottom:90px"></div>
         </div>
+        <div class="cover-front">
+          <div class="leather-texture"></div>
+          <div class="cover-border"></div>
+          <div class="cover-title">O LIVRO<br>DE TOGAR</div>
+          <div class="cc tl"></div>
+          <div class="cc tr"></div>
+          <div class="cc bl"></div>
+          <div class="cc br"></div>
+
+          <!-- CORUJA ESCULPIDA NA CAPA -->
+          <svg class="cover-owl" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="60" cy="85" rx="32" ry="40" fill="none" stroke="rgba(210,170,80,1)" stroke-width="1.6"/>
+            <ellipse cx="60" cy="44" rx="24" ry="22" fill="none" stroke="rgba(210,170,80,1)" stroke-width="1.6"/>
+            <path d="M43 26 L38 14 L50 23" fill="none" stroke="rgba(210,170,80,1)" stroke-width="1.4" stroke-linejoin="round"/>
+            <path d="M77 26 L82 14 L70 23" fill="none" stroke="rgba(210,170,80,1)" stroke-width="1.4" stroke-linejoin="round"/>
+            <circle cx="48" cy="44" r="9" fill="none" stroke="rgba(210,170,80,1)" stroke-width="1.4"/>
+            <circle cx="48" cy="44" r="5" fill="none" stroke="rgba(210,170,80,.7)" stroke-width="1"/>
+            <circle cx="48" cy="44" r="2" fill="rgba(210,170,80,.6)"/>
+            <circle cx="72" cy="44" r="9" fill="none" stroke="rgba(210,170,80,1)" stroke-width="1.4"/>
+            <circle cx="72" cy="44" r="5" fill="none" stroke="rgba(210,170,80,.7)" stroke-width="1"/>
+            <circle cx="72" cy="44" r="2" fill="rgba(210,170,80,.6)"/>
+            <path d="M56 54 L60 60 L64 54 Z" fill="rgba(210,170,80,.6)" stroke="rgba(210,170,80,1)" stroke-width="1" stroke-linejoin="round"/>
+            <path d="M28 80 Q18 95 22 118 Q32 108 38 96" fill="none" stroke="rgba(210,170,80,.8)" stroke-width="1.4"/>
+            <path d="M92 80 Q102 95 98 118 Q88 108 82 96" fill="none" stroke="rgba(210,170,80,.8)" stroke-width="1.4"/>
+            <line x1="44" y1="72" x2="52" y2="84" stroke="rgba(210,170,80,.3)" stroke-width="1"/>
+            <line x1="52" y1="70" x2="58" y2="84" stroke="rgba(210,170,80,.3)" stroke-width="1"/>
+            <line x1="60" y1="70" x2="64" y2="84" stroke="rgba(210,170,80,.25)" stroke-width="1"/>
+            <line x1="68" y1="70" x2="72" y2="84" stroke="rgba(210,170,80,.3)" stroke-width="1"/>
+            <line x1="76" y1="72" x2="70" y2="86" stroke="rgba(210,170,80,.3)" stroke-width="1"/>
+            <path d="M44 124 L38 132 M44 124 L43 133 M44 124 L50 132" fill="none" stroke="rgba(210,170,80,.7)" stroke-width="1.2" stroke-linecap="round"/>
+            <path d="M76 124 L82 132 M76 124 L77 133 M76 124 L70 132" fill="none" stroke="rgba(210,170,80,.7)" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="28" y1="128" x2="92" y2="128" stroke="rgba(210,170,80,.45)" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+
+          <div class="cover-runes">ᚠ ᚢ ᚦ ᚨ ᚱ</div>
+
+          <div class="pages-side"></div>
+        </div>
+      </div>
+      <p id="openHint">— toque para abrir —</p>
     </div>
 
-    <script src="script.js"></script>
+    <!-- ========== LIVRO ABERTO ========== -->
+    <div id="openBook">
+      <div class="open-book-inner">
+
+        <!-- TÍTULO DO ATO — faixa central sobre a lombada -->
+        <div class="act-title-wrap">
+          <div id="actTitle" class="act-title">Ato I</div>
+        </div>
+
+        <!-- ==================== DIVISÃO: MISSÕES PRINCIPAIS ==================== -->
+        <div id="mainMissionView" class="book-view active">
+          <!-- Página esquerda — Título e Descrição -->
+          <div class="page-left">
+            <div class="page-label">Missão Principal</div>
+            <div class="page-content" id="mainLeftContent"></div>
+            <button class="nav-btn nav-btn-bottom" onclick="goToSecondaryMissions()">Missões Secundárias →</button>
+            <span class="page-num">I</span>
+          </div>
+
+          <!-- Página direita — Imagem da Missão -->
+          <div class="page-right">
+            <div class="page-label">Ilustração</div>
+            <div class="page-content page-content-image" id="mainRightContent"></div>
+            <span class="page-num">II</span>
+          </div>
+        </div>
+
+        <!-- ==================== DIVISÃO: MISSÕES SECUNDÁRIAS ==================== -->
+        <div id="secondaryMissionView" class="book-view">
+          <!-- Página esquerda — Lista de missões -->
+          <div class="page-left">
+            <div class="page-label">Missões Secundárias</div>
+            <div class="page-content" id="secondaryLeftContent"></div>
+            <button class="nav-btn nav-btn-bottom" onclick="goToMainMissions()">← Missão Principal</button>
+            <span class="page-num">III</span>
+          </div>
+
+          <!-- Página direita — Detalhes da missão selecionada -->
+          <div class="page-right">
+            <div class="page-label">Detalhes</div>
+            <div class="page-content" id="secondaryRightContent"></div>
+            <span class="page-num">IV</span>
+          </div>
+        </div>
+
+        <div class="open-spine"></div>
+      </div>
+    </div>
+
+    <button id="closeBtn" onclick="closeBook()">&#10005; &nbsp; fechar o livro</button>
+
+    <div id="imageModal" class="image-modal" aria-hidden="true">
+      <div class="image-modal-backdrop" onclick="closeImageViewer()"></div>
+      <div class="image-modal-content" role="dialog" aria-modal="true" aria-label="Visualizador de imagem">
+        <div class="image-modal-header">
+          <button class="image-modal-close" onclick="closeImageViewer()" aria-label="Fechar">×</button>
+          <div class="image-modal-controls">
+            <div class="zoom-controls">
+              <button type="button" onclick="changeImageZoom(-0.2)">−</button>
+              <input id="zoomRange" type="range" min="1" max="2.5" step="0.05" value="1" aria-label="Zoom" oninput="handleZoomRange(event)">
+              <button type="button" onclick="changeImageZoom(0.2)">+</button>
+            </div>
+            <div class="drag-hint">Arraste para mover</div>
+          </div>
+        </div>
+        <div class="image-modal-wrapper">
+          <img id="imageModalImg" src="" alt="" class="image-modal-img" draggable="false">
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
