@@ -15,6 +15,11 @@
    3. SIDE_MISSIONS → Array de missões secundárias (página direita)
       - title, desc, done: igual à principal
 
+   4. REPUTATION_ENTRIES → Array de reputações (6 slots)
+      - name:  nome da facção/grupo
+      - value: pontos de reputação
+      - Deixe vazio para ficar invisível
+
    ============================================================ */
 
 /* ── ATO ATUAL ──────────────────────────────────────────── */
@@ -29,12 +34,11 @@ const ACT_TITLE = "Ato II";
 /* ── MISSÃO PRINCIPAL ───────────────────────────────────── */
 const MAIN_MISSION = {
   title : "Investigue Esverta",
-  desc  : `Os mendigos comentaram para o Giorgino que um grupo de homens encapuzados andaram pela cidade de Esverta, eles ouviram algo sobre ressucitação de mortos, a maioria dos mendigos de Esverta são subordinados de um homem chamado Esfola olhos que é devoto das divindades da morte Kindreds, então é de bom saber que esse tipo de habilidade é proibida e considerada profana para as leis naturais da magia natural.`,
-  image : "esverta_desenhada.png"
+  desc  : `Os mendigos comentaram para o Giorgino que um grupo de homens encapuzados andaram pela cidade de Esverta, eles ouviram algo sobre ressucitação de mortos, a maioria dos mendigos de Esverta são subordinados de um homem chamado "Esfola olhos ou Rei dos mendigos" que é devoto das divindades da morte Kindreds, então é de bom saber que esse tipo de habilidade é proibida e considerada profana para as leis naturais da magia natural, o melhor a se fazer é tentar contado com esse tal "Rei dos mendigos", ele deve saber algo sobre.`,
+  image : "assets/esverta_desenhada.png"
 };
 
 /* ── MISSÕES SECUNDÁRIAS ────────────────────────────────── */
-// Cada missão com title/desc vazios fica oculta, mas o slot fica no código para ativar depois.
 const SIDE_MISSIONS = [
   {
     title : "O urso de Targon",
@@ -42,8 +46,8 @@ const SIDE_MISSIONS = [
     done  : false
   },
   {
-    title : "",
-    desc  : "",
+    title : "A lagrima de fogo",
+    desc  : "Datron o manuseador de fogo, falou que no alto da montanha wyvern, existe uma lagrima de wyvern, esse item peculiar que se origina a partir da lagrima de magma cristalizada de um wyvern, é costumeiramente usada para abençoar um martelo ferreiro e assim poder criar itens melhores, ele prometeu que além de agora produzir itens melhorados, fará de bom grado uma peça de armadura pra quem encontrar",
     done  : false
   },
   {
@@ -76,10 +80,24 @@ const SIDE_MISSIONS = [
     desc  : "",
     done  : false
   }
-  
-  /* Adicione mais missões secundárias aqui, separadas por vírgula */
 ];
 
+/* ── REPUTAÇÃO ──────────────────────────────────────────── */
+const REPUTATION_STORAGE_KEY = 'livroDeTogar_reputation';
+
+// 6 SLOTS de reputação (preencha os que quiser, os vazios ficam invisíveis)
+const REPUTATION_ENTRIES = [
+  { name: "Vila Entre Lados", value: "30/30" },
+  { name: "Esverta", value: "0/90" },
+  { name: "", value: "" },
+  { name: "", value: "" },
+  { name: "", value: "" },
+  { name: "", value: "" }
+];
+
+let currentReputationIdx = 0;
+let currentReputationPage = 0;
+const REPUTATION_PAGE_SIZE = 5;
 
 /* ============================================================
    ENGINE — não editar abaixo
@@ -100,6 +118,17 @@ let dragOriginY = 0;
 
 const SECONDARY_MISSIONS_STORAGE_KEY = 'livroDeTogar_secondaryMissions';
 
+/* ── Funções auxiliares ──────────────────────────────────── */
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+/* ── Estado das Missões Secundárias ──────────────────────── */
 function loadSecondaryMissionsState() {
   try {
     const stored = localStorage.getItem(SECONDARY_MISSIONS_STORAGE_KEY);
@@ -128,9 +157,155 @@ function saveSecondaryMissionsState() {
   }
 }
 
-loadSecondaryMissionsState();
+/* ── Estado da Reputação ──────────────────────────────────── */
+function loadReputationState() {
+  try {
+    const stored = localStorage.getItem(REPUTATION_STORAGE_KEY);
+    if (!stored) return;
 
-/* ── Áudio ──────────────────────────────────────────────– */
+    const savedState = JSON.parse(stored);
+    if (!Array.isArray(savedState)) return;
+
+    const normalized = savedState
+      .map((entry) => ({
+        name: typeof entry?.name === 'string' ? entry.name : '',
+        value: typeof entry?.value === 'string' || typeof entry?.value === 'number' ? String(entry.value) : ''
+      }))
+      .filter((entry) => entry.name.trim() || entry.value.trim());
+
+    if (normalized.length) {
+      REPUTATION_ENTRIES.splice(0, REPUTATION_ENTRIES.length, ...normalized);
+      while (REPUTATION_ENTRIES.length < 6) {
+        REPUTATION_ENTRIES.push({ name: '', value: '' });
+      }
+    }
+  } catch (error) {
+    console.warn('Falha ao carregar estado da reputação:', error);
+  }
+}
+
+function saveReputationState() {
+  try {
+    const toSave = REPUTATION_ENTRIES.filter(e => e.name.trim());
+    localStorage.setItem(REPUTATION_STORAGE_KEY, JSON.stringify(toSave));
+  } catch (error) {
+    console.warn('Falha ao salvar estado da reputação:', error);
+  }
+}
+
+function getVisibleReputations() {
+  return REPUTATION_ENTRIES
+    .map((entry, index) => ({ entry, index }))
+    .filter(({ entry }) => {
+      const hasName = typeof entry?.name === 'string' && entry.name.trim();
+      return hasName;
+    });
+}
+
+function getReputationPageCount() {
+  return Math.max(1, Math.ceil(getVisibleReputations().length / REPUTATION_PAGE_SIZE));
+}
+
+function ensureValidReputationSelection() {
+  const visible = getVisibleReputations();
+  if (!visible.length) {
+    currentReputationIdx = -1;
+    currentReputationPage = 0;
+    return;
+  }
+  const selectedIndex = visible.findIndex(item => item.index === currentReputationIdx);
+  if (selectedIndex === -1) {
+    currentReputationIdx = visible[0].index;
+    currentReputationPage = 0;
+  } else {
+    currentReputationPage = Math.floor(selectedIndex / REPUTATION_PAGE_SIZE);
+  }
+}
+
+function changeReputationPage(delta) {
+  const pageCount = getReputationPageCount();
+  currentReputationPage = Math.min(Math.max(0, currentReputationPage + delta), pageCount - 1);
+  renderReputationList();
+  renderReputationDetails();
+}
+
+function renderReputationList() {
+  const el = document.getElementById('reputationLeftContent');
+  const visible = getVisibleReputations();
+
+  if (!visible.length) {
+    el.innerHTML = `<div class="no-missions">Nenhuma reputação registrada.</div>`;
+    return;
+  }
+
+  const fallbackHtml = visible.map(({ entry, index }) => `
+    <div class="reputation-list-item ${index === currentReputationIdx ? 'active' : ''}" onclick="selectReputationEntry(${index})">
+      <div class="reputation-list-title">${escapeHtml(entry.name)}</div>
+      <div class="reputation-list-status">${escapeHtml(String(entry.value))} pts</div>
+    </div>
+  `).join('');
+
+  el.innerHTML = fallbackHtml;
+
+  ensureValidReputationSelection();
+  const pageCount = getReputationPageCount();
+  if (currentReputationPage >= pageCount) currentReputationPage = pageCount - 1;
+
+  const start = currentReputationPage * REPUTATION_PAGE_SIZE;
+  const pageEntries = visible.slice(start, start + REPUTATION_PAGE_SIZE);
+
+  const listHtml = pageEntries.map(({ entry, index }) => `
+    <div class="reputation-list-item ${index === currentReputationIdx ? 'active' : ''}" 
+         onclick="selectReputationEntry(${index})">
+      <div class="reputation-list-title">${escapeHtml(entry.name)}</div>
+      <div class="reputation-list-status">${escapeHtml(String(entry.value))} pts</div>
+    </div>
+  `).join('');
+
+  const pageControls = pageCount > 1 ? `
+    <div class="secondary-page-controls">
+      <button class="page-btn" onclick="changeReputationPage(-1)" ${currentReputationPage === 0 ? 'disabled' : ''}>← Página anterior</button>
+      <span>Página ${currentReputationPage + 1} de ${pageCount}</span>
+      <button class="page-btn" onclick="changeReputationPage(1)" ${currentReputationPage === pageCount - 1 ? 'disabled' : ''}>Próxima página →</button>
+    </div>
+  ` : '';
+
+  el.innerHTML = listHtml + pageControls;
+}
+
+function renderReputationDetails() {
+  const el = document.getElementById('reputationRightContent');
+  const visible = getVisibleReputations();
+
+  if (!visible.length || currentReputationIdx < 0) {
+    el.innerHTML = `<div class="no-missions">Nenhuma reputação selecionada.</div>`;
+    return;
+  }
+
+  const entry = REPUTATION_ENTRIES[currentReputationIdx];
+  if (!entry || !entry.name.trim()) {
+    el.innerHTML = `<div class="no-missions">Nenhuma reputação selecionada.</div>`;
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="mission-block">
+      <div class="mission-tag">Reputação</div>
+      <div class="mission-title">${escapeHtml(entry.name)}</div>
+      <p class="mission-desc">
+        <strong>${escapeHtml(String(entry.value || '0'))}</strong> Pontos de reputação
+      </p>
+    </div>
+  `;
+}
+
+function selectReputationEntry(idx) {
+  currentReputationIdx = idx;
+  renderReputationList();
+  renderReputationDetails();
+}
+
+/* ── Áudio ────────────────────────────────────────────── */
 function playEffect(id) {
   const a = document.getElementById(id);
   if (!a) return;
@@ -204,7 +379,7 @@ function renderMainMissionRight() {
     if (imageEl) {
       imageEl.addEventListener('error', function () {
         this.style.display = 'none';
-        this.parentElement.innerHTML = '<div class="img-placeholder mission-image-placeholder"><p>Imagem não disponível</p><small>E aqui é pra por a foto: defina imgSrc no script.js</small></div>';
+        this.parentElement.innerHTML = '<div class="img-placeholder mission-image-placeholder"><p>Imagem não disponível</p><small>Verifique o caminho da imagem</small></div>';
       });
     }
   } else {
@@ -253,6 +428,7 @@ function changeSecondaryPage(delta) {
   const pageCount = getSecondaryPageCount();
   currentSecondaryPage = Math.min(Math.max(0, currentSecondaryPage + delta), pageCount - 1);
   renderSecondaryMissionList();
+  renderSecondaryMissionDetails();
 }
 
 /* ── Renderizar Missões Secundárias (lado esquerdo - lista) ────── */
@@ -260,7 +436,7 @@ function renderSecondaryMissionList() {
   const el = document.getElementById('secondaryLeftContent');
   const visible = getVisibleSecondaryMissions();
   if (!visible.length) {
-    el.innerHTML = `<div class="no-missions">Nenhuma missão secundária.</div>`;
+    el.innerHTML = `<div class="no-missions">Nenhuma missão secundária disponível.</div>`;
     return;
   }
 
@@ -295,7 +471,7 @@ function renderSecondaryMissionDetails() {
   const el = document.getElementById('secondaryRightContent');
   const visible = getVisibleSecondaryMissions();
   if (!visible.length || currentSecondaryMissionIdx < 0) {
-    el.innerHTML = `<div class="no-missions">Nenhuma missão secundária registrada.</div>`;
+    el.innerHTML = `<div class="no-missions">Nenhuma missão secundária selecionada.</div>`;
     return;
   }
 
@@ -335,7 +511,7 @@ function toggleSecondaryMission(idx) {
   renderSecondaryMissionDetails();
 }
 
-/* ── Navegação: Ir para Missões Secundárias ────────────────────– */
+/* ── Navegação: Ir para Missões Secundárias ──────────────────── */
 function goToSecondaryMissions() {
   const mainView = document.getElementById('mainMissionView');
   const secView = document.getElementById('secondaryMissionView');
@@ -350,6 +526,9 @@ function goToSecondaryMissions() {
 
     secView.style.display = 'block';
     secView.classList.add('active');
+    
+    renderSecondaryMissionList();
+    renderSecondaryMissionDetails();
   }, 700);
 }
 
@@ -368,6 +547,58 @@ function goToMainMissions() {
 
     mainView.style.display = 'block';
     mainView.classList.add('active');
+    
+    renderMainMissionLeft();
+    renderMainMissionRight();
+  }, 700);
+}
+
+/* ── Navegação: Ir para Reputação ─────────────────────────────── */
+function goToReputationView() {
+  const secView = document.getElementById('secondaryMissionView');
+  const repView = document.getElementById('reputationView');
+  const page = secView ? secView.querySelector('.page-left') : null;
+
+  if (page) {
+    page.classList.add('turn-out');
+  }
+
+  setTimeout(() => {
+    if (page) {
+      page.classList.remove('turn-out');
+    }
+
+    if (secView) {
+      secView.classList.remove('active');
+      secView.style.display = 'none';
+    }
+
+    repView.style.display = 'block';
+    repView.classList.add('active');
+
+    renderReputationList();
+    renderReputationDetails();
+  }, 700);
+}
+
+/* ── Navegação: Voltar para Missões Secundárias ───────────────── */
+function goToSecondaryMissionsFromReputation() {
+  const secView = document.getElementById('secondaryMissionView');
+  const repView = document.getElementById('reputationView');
+  const page = repView.querySelector('.page-left');
+
+  page.classList.add('turn-out');
+
+  setTimeout(() => {
+    page.classList.remove('turn-out');
+    repView.classList.remove('active');
+    repView.style.display = 'none';
+
+    secView.style.display = 'block';
+    secView.classList.add('active');
+    
+    renderSecondaryMissionList();
+    renderSecondaryMissionDetails();
   }, 700);
 }
 
@@ -381,13 +612,29 @@ function openBookView() {
   document.documentElement.style.overflow = 'auto';
   window.scrollTo({ top: 0, behavior: 'smooth' });
   playEffect('audioOpen');
-  
+
   // Resetar estado e renderizar
   currentSecondaryMissionIdx = 0;
+  currentReputationIdx = 0;
+  currentReputationPage = 0;
+
+  const mainView = document.getElementById('mainMissionView');
+  const secView = document.getElementById('secondaryMissionView');
+  const repView = document.getElementById('reputationView');
+
+  mainView.classList.add('active');
+  mainView.style.display = 'block';
+  secView.classList.remove('active');
+  secView.style.display = 'none';
+  repView.classList.remove('active');
+  repView.style.display = 'none';
+
   renderMainMissionLeft();
   renderMainMissionRight();
   renderSecondaryMissionList();
   renderSecondaryMissionDetails();
+  renderReputationList();
+  renderReputationDetails();
 }
 
 /* ── Fechar livro ───────────────────────────────────────── */
@@ -399,6 +646,7 @@ function closeBook() {
   document.documentElement.style.overflow = '';
 }
 
+/* ── Visualizador de imagem ─────────────────────────────── */
 function initImageViewerTriggers() {
   document.querySelectorAll('.mission-image-container').forEach(el => {
     el.onclick = () => openImageViewer(el.dataset.image, el.dataset.title || '');
@@ -491,3 +739,20 @@ if (imageModalWrapper) {
     imageModalWrapper.classList.remove('dragging');
   });
 }
+
+/* ── Carregar estados ao iniciar ────────────────────────── */
+loadSecondaryMissionsState();
+function initializeBookContent() {
+  loadSecondaryMissionsState();
+  loadReputationState();
+  renderMainMissionLeft();
+  renderMainMissionRight();
+  renderSecondaryMissionList();
+  renderSecondaryMissionDetails();
+  renderReputationList();
+  renderReputationDetails();
+}
+
+document.addEventListener('DOMContentLoaded', initializeBookContent);
+window.addEventListener('load', initializeBookContent);
+initializeBookContent();
