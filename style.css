@@ -1,5 +1,5 @@
 /* ============================================================
-   style.css — O Livro de Togar (Missões)
+   style.css — O Livro de Togar (Missões + Grimório)
    ============================================================ */
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -40,6 +40,84 @@ body {
 @keyframes ambientPulse {
   0%,100% { opacity:.6; transform:translate(-50%,-50%) scale(1); }
   50%     { opacity:1;  transform:translate(-50%,-50%) scale(1.05); }
+}
+
+/* ============================================================
+   BOTÃO GRIMÓRIO FIXO (FORA DO LIVRO)
+   ============================================================ */
+.grimorio-fixo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: linear-gradient(180deg, rgba(42, 24, 10, 0.94), rgba(18, 10, 5, 0.95));
+  color: #d8b36b;
+  border: 1px solid rgba(216, 179, 107, 0.8);
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Georgia', serif;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  cursor: pointer;
+  z-index: 1000;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+  box-shadow: 0 10px 30px rgba(8, 5, 2, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.grimorio-fixo::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: inherit;
+  border: 1px solid rgba(216, 179, 107, 0.18);
+  pointer-events: none;
+}
+
+.grimorio-fixo:hover {
+  transform: translateY(-2px) scale(1.02);
+  border-color: #f0cc85;
+  box-shadow: 0 14px 38px rgba(212, 165, 74, 0.18);
+}
+
+.grimorio-fixo.is-pressed {
+  animation: grimorioClickPulse 0.42s ease;
+}
+
+@keyframes grimorioClickPulse {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(0.94); }
+  55%  { transform: scale(1.06) translateY(-2px); }
+  100% { transform: scale(1); }
+}
+
+.grimorio-fixo .badge {
+  display: none;
+}
+
+/* ── AÇÕES DO GRIMÓRIO ────────────────────────────────────── */
+.grimorio-actions {
+  display:flex;
+  justify-content:flex-start;
+  margin-bottom:10px;
+}
+
+.grimorio-back-btn {
+  background: transparent;
+  color: #d4a54a;
+  border: 1px solid rgba(212, 165, 74, 0.45);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.grimorio-back-btn:hover {
+  background: rgba(212, 165, 74, 0.12);
+  transform: translateY(-1px);
 }
 
 /* ── SONS DO TOGAR ───────────────────────────────────────── */
@@ -1173,6 +1251,15 @@ body {
     padding:8px 20px;
     font-size:10px;
   }
+
+  /* Botão Grimório em telas menores */
+  .grimorio-fixo {
+    bottom: 16px;
+    right: 16px;
+    padding: 10px 18px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
 }
 
 @media (max-width: 520px) {
@@ -1232,4 +1319,393 @@ body {
   .zoom-controls input[type=range] {
     width:110px;
   }
+
+  .grimorio-fixo {
+    bottom: 12px;
+    right: 12px;
+    padding: 8px 14px;
+    font-size: 12px;
+    border-radius: 8px;
+    border-width: 1.5px;
+  }
+}
+
+/* ============================================================
+   GRIMÓRIO - MAGIAS
+   ============================================================ */
+
+.grimorio-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(120,85,35,.15);
+}
+
+.grimorio-tab {
+  padding: 4px 10px;
+  font-size: 9px;
+  font-family: 'Georgia', serif;
+  background: rgba(180,140,70,.08);
+  border: 1px solid rgba(140,100,40,.2);
+  border-radius: 3px;
+  color: rgba(80,46,12,.6);
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.grimorio-tab:hover {
+  background: rgba(180,140,70,.16);
+  color: rgba(80,46,12,.9);
+}
+
+.grimorio-tab.active {
+  background: rgba(180,140,70,.25);
+  border-color: rgba(140,100,40,.5);
+  color: rgba(80,46,12,1);
+}
+
+.grimorio-magia-lista {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+}
+
+.grimorio-magia-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(180,140,70,.04);
+  border: 1px solid rgba(140,100,40,.12);
+  border-left: 3px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.grimorio-magia-item:hover {
+  background: rgba(180,140,70,.1);
+}
+
+.grimorio-magia-item.active {
+  background: rgba(180,140,70,.16);
+  border-color: rgba(140,100,40,.35);
+}
+
+.grimorio-magia-icone {
+  font-size: 14px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.grimorio-magia-nome {
+  font-size: 11px;
+  font-weight: bold;
+  color: rgba(65,35,8,.88);
+  flex: 1;
+}
+
+.grimorio-magia-nivel-tag {
+  font-size: 7px;
+  color: rgba(100,65,20,.45);
+  background: rgba(140,100,40,.08);
+  padding: 1px 8px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+/* Detalhe da magia na página direita */
+.magia-detalhe {
+  padding: 4px 0;
+}
+
+.magia-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.magia-header .magia-icone {
+  font-size: 22px;
+}
+
+.magia-header .magia-nome {
+  font-size: 18px;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.magia-tipo {
+  font-size: 11px;
+  font-style: italic;
+  margin-bottom: 8px;
+  opacity: .8;
+}
+
+.magia-info {
+  display: flex;
+  gap: 16px;
+  font-size: 10px;
+  color: rgba(100,65,20,.6);
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.magia-info span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.magia-descricao {
+  font-size: 10px;
+  line-height: 1.7;
+  color: rgba(55,30,8,.82);
+  margin-bottom: 12px;
+  max-height: 120px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.magia-sketch {
+  border: 1px solid rgba(212, 165, 74, 0.45);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(212, 165, 74, 0.05));
+  padding: 6px;
+  margin-bottom: 12px;
+  min-height: 106px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.magia-sketch-svg {
+  width: 100%;
+  height: 92px;
+  display: block;
+}
+
+.magia-classes {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.magia-classe-tag {
+  font-size: 8px;
+  background: rgba(140,100,40,.12);
+  padding: 2px 12px;
+  border-radius: 12px;
+  color: rgba(80,46,12,.7);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Scroll personalizado para a lista de magias */
+.grimorio-magia-lista::-webkit-scrollbar {
+  width: 3px;
+}
+.grimorio-magia-lista::-webkit-scrollbar-thumb {
+  background: rgba(160,120,60,.3);
+  border-radius: 2px;
+}
+.grimorio-magia-lista::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ============================================================
+   MANA E UPCAST
+   ============================================================ */
+
+.magia-mana {
+  background: rgba(180,140,70,.06);
+  border: 1px solid rgba(140,100,40,.15);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 8px 0 6px;
+}
+
+.mana-title {
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(100,65,20,.6);
+  margin-bottom: 8px;
+}
+
+.mana-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.mana-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,.04);
+  border-radius: 4px;
+  padding: 4px 0;
+}
+
+.mana-nivel {
+  font-size: 8px;
+  color: rgba(100,65,20,.45);
+  letter-spacing: 0.5px;
+}
+
+.mana-custo {
+  font-size: 11px;
+  font-weight: bold;
+  color: rgba(65,35,8,.8);
+}
+
+.mana-destaque {
+  font-size: 10px;
+  color: rgba(65,35,8,.75);
+  border-top: 1px solid rgba(140,100,40,.1);
+  padding-top: 6px;
+  text-align: center;
+}
+
+.magia-upcast {
+  background: rgba(180,140,70,.04);
+  border: 1px solid rgba(140,100,40,.1);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 6px 0 4px;
+}
+
+.upcast-title {
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(100,65,20,.5);
+  margin-bottom: 4px;
+}
+
+.upcast-desc {
+  font-size: 9px;
+  line-height: 1.5;
+  color: rgba(55,30,8,.7);
+  margin-bottom: 4px;
+}
+
+.upcast-example {
+  font-size: 9px;
+  color: rgba(55,30,8,.75);
+  background: rgba(255,255,255,.04);
+  border-radius: 4px;
+  padding: 6px 8px;
+  border-left: 2px solid rgba(140,100,40,.25);
+}
+
+/* ============================================================
+   FILTROS DO GRIMÓRIO (BUSCA E CLASSE)
+   ============================================================ */
+
+.grimorio-filtros {
+  padding: 6px 16px 4px;
+  background: rgba(180,140,70,.04);
+  border-bottom: 1px solid rgba(140,100,40,.12);
+  flex-shrink: 0;
+  z-index: 5;
+  position: relative;
+}
+
+.grimorio-busca {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.grimorio-busca input {
+  flex: 1;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(140,100,40,.2);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-family: 'Georgia', serif;
+  color: rgba(65,35,8,.8);
+  outline: none;
+  transition: border-color .2s;
+}
+
+.grimorio-busca input::placeholder {
+  color: rgba(100,65,20,.35);
+  font-style: italic;
+}
+
+.grimorio-busca input:focus {
+  border-color: rgba(140,100,40,.5);
+}
+
+.grimorio-busca-btn {
+  background: rgba(180,140,70,.12);
+  border: 1px solid rgba(140,100,40,.2);
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 10px;
+  font-family: 'Georgia', serif;
+  color: rgba(65,35,8,.7);
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.grimorio-busca-btn:hover {
+  background: rgba(180,140,70,.2);
+  border-color: rgba(140,100,40,.4);
+}
+
+.grimorio-classe-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  padding-bottom: 4px;
+}
+
+.filtro-label {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(100,65,20,.4);
+  margin-right: 4px;
+}
+
+.filtro-classe-btn {
+  padding: 3px 10px;
+  font-size: 8px;
+  font-family: 'Georgia', serif;
+  background: transparent;
+  border: 1px solid rgba(140,100,40,.15);
+  border-radius: 12px;
+  color: rgba(80,46,12,.5);
+  cursor: pointer;
+  transition: all .2s;
+  letter-spacing: 0.5px;
+}
+
+.filtro-classe-btn:hover {
+  background: rgba(180,140,70,.08);
+  color: rgba(80,46,12,.8);
+  border-color: rgba(140,100,40,.3);
+}
+
+.filtro-classe-btn.active {
+  background: rgba(180,140,70,.18);
+  border-color: rgba(140,100,40,.5);
+  color: rgba(80,46,12,1);
 }
