@@ -20,6 +20,11 @@
 
   <audio id="audioOpen" preload="auto"><source src="book-open.mp3" type="audio/mpeg"></audio>
 
+  <!-- ========== BOTÃO GRIMÓRIO FIXO (FORA DO LIVRO) ========== -->
+  <button id="grimorioFixoBtn" class="grimorio-fixo" onclick="goToGrimorioView(); animateGrimorioButton(this)">
+    Grimório
+  </button>
+
   <div id="scene">
 
     <!-- ========== LIVRO FECHADO ========== -->
@@ -127,7 +132,9 @@
           <div class="page-left">
             <div class="page-label">Reputação</div>
             <div class="page-content" id="reputationLeftContent"></div>
-            <button class="nav-btn nav-btn-bottom" onclick="goToSecondaryMissionsFromReputation()">← Missões Secundárias</button>
+            <div class="page-actions">
+              <button class="nav-btn" onclick="goToSecondaryMissionsFromReputation()">← Missões Secundárias</button>
+            </div>
             <span class="page-num">V</span>
           </div>
 
@@ -136,6 +143,46 @@
             <div class="page-label">Detalhes</div>
             <div class="page-content" id="reputationRightContent"></div>
             <span class="page-num">VI</span>
+          </div>
+        </div>
+
+        <!-- ==================== DIVISÃO: GRIMÓRIO ==================== -->
+        <div id="grimorioView" class="book-view">
+  <!-- Página esquerda — Níveis + Lista de Magias -->
+  <div class="page-left">
+    <div class="page-label">Grimório</div>
+    
+    <!-- ===== NOVO: FILTROS E BUSCA ===== -->
+    <div class="grimorio-filtros">
+      <div class="grimorio-busca">
+        <input type="text" id="grimorioBuscaInput" placeholder="Buscar magia..." oninput="aplicarFiltrosGrimorio()">
+        <button class="grimorio-busca-btn" onclick="aplicarFiltrosGrimorio()">Buscar</button>
+      </div>
+      <div class="grimorio-classe-filtros">
+        <span class="filtro-label">Classe:</span>
+        <button class="filtro-classe-btn active" data-classe="todas" onclick="filtrarPorClasse('todas')">Todas</button>
+        <button class="filtro-classe-btn" data-classe="Acólito" onclick="filtrarPorClasse('Acólito')">Acólito</button>
+        <button class="filtro-classe-btn" data-classe="Arcanista" onclick="filtrarPorClasse('Arcanista')">Arcanista</button>
+        <button class="filtro-classe-btn" data-classe="Mercurial" onclick="filtrarPorClasse('Mercurial')">Mercurial</button>
+        <button class="filtro-classe-btn" data-classe="Xamã" onclick="filtrarPorClasse('Xamã')">Xamã</button>
+        <button class="filtro-classe-btn" data-classe="Combatente" onclick="filtrarPorClasse('Combatente')">Combatente</button>
+        <button class="filtro-classe-btn" data-classe="Caçador" onclick="filtrarPorClasse('Caçador')">Caçador</button>
+        <button class="filtro-classe-btn" data-classe="Bruto" onclick="filtrarPorClasse('Bruto')">Bruto</button>
+      </div>
+    </div>
+    <!-- ===== FIM DOS FILTROS ===== -->
+    
+    <div class="page-content" id="grimorioLeftContent">
+      <!-- Tabs de níveis e lista de magias são geradas pelo JavaScript -->
+    </div>
+    <span class="page-num">VII</span>
+  </div>
+
+          <!-- Página direita — Detalhes da Magia -->
+          <div class="page-right">
+            <div class="page-label">Detalhes</div>
+            <div class="page-content" id="grimorioRightContent"></div>
+            <span class="page-num">VIII</span>
           </div>
         </div>
 
