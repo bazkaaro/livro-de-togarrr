@@ -7,8 +7,8 @@ const ACT_TITLE = "Ato II";
 
 /* ── MISSÃO PRINCIPAL ───────────────────────────────────── */
 const MAIN_MISSION = {
-  title : "Investigue Esverta",
-  desc  : `Os mendigos comentaram para o Giorgino que um grupo de homens encapuzados andaram pela cidade de Esverta, eles ouviram algo sobre ressucitação de mortos, a maioria dos mendigos de Esverta são subordinados de um homem chamado "Esfola olhos ou Rei dos mendigos" que é devoto das divindades da morte Kindreds, então é de bom saber que esse tipo de habilidade é proibida e considerada profana para as leis naturais da magia natural, o melhor a se fazer é tentar contado com esse tal "Rei dos mendigos", ele deve saber algo sobre.`,
+  title : "Ganhe respeito!",
+  desc  : `Aparentemente para falar com o Rei dos mendigos ou esfola olhos, precisa-se ganhar algum tipo de respeito, o taverneiro comentou que a melhor forma é ajudando os moradores ou competindo na arena dos despertos.`,
   image : "assets/esverta_desenhada.png"
 };
 
@@ -28,7 +28,7 @@ const SIDE_MISSIONS = [
 const REPUTATION_STORAGE_KEY = 'livroDeTogar_reputation';
 const REPUTATION_ENTRIES = [
   { name: "Vila Entre Lados", value: "30/30" },
-  { name: "Esverta", value: "0/90" },
+  { name: "Esverta", value: "10/90" },
   { name: "", value: "" },
   { name: "", value: "" },
   { name: "", value: "" },
